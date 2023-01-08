@@ -1,0 +1,8 @@
+-   id: changelog-check
+    name: Changelog update check
+    description: Check if the changelog was updated in the particular feature branch
+    entry: ./changelog-check.py
+    language: script
+    always_run: true
+    pass_filenames: false
+    stages: [manual, push]
