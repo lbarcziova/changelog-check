@@ -23,6 +23,7 @@ def skip_check(keyword: str, branch_to_compare: str):
     # TODO decide whether it is needed for each commit
     # to contain the skip key-word or this solution is ok
     commit_messages = run_command(["git", "log", "--pretty=format:%b", f"{branch_to_compare}.."])
+    print(f"Commit messages: {commit_messages}")
     return keyword in commit_messages
 
 
@@ -54,6 +55,8 @@ def main():
     changed_files_output = run_command(
         ["git", "diff", "--name-only", f"{args.branch_to_compare}..."],
     )
+    print(f"Changed files output: {changed_files_output}")
+
     changed_files = changed_files_output.strip().split('\n')
 
     if args.changelog_file_name in changed_files:
