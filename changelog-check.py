@@ -47,6 +47,8 @@ def get_arguments():
 
 def main():
     args = get_arguments()
+    git_log_output = run_command(["git", "log", "--pretty=format:%H", f"{args.branch_to_compare}.."])
+    print(f"Git log output: {git_log_output})")
 
     if skip_check(args.skip_keyword, args.branch_to_compare):
         print("Changelog check is being skipped.")
