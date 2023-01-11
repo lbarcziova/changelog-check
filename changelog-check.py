@@ -19,10 +19,10 @@ def run_command(command: List[str]):
     ).stdout.decode()
 
 
-def skip_check(keyword: str, branch_to_compare: str):
+def skip_check(keyword: str, upstream_hash: str):
     # TODO decide whether it is needed for each commit
     # to contain the skip key-word or this solution is ok
-    commit_messages = run_command(["git", "log", "--pretty=format:%b", f"{branch_to_compare}.."])
+    commit_messages = run_command(["git", "log", "--pretty=format:%b", f"{upstream_hash}.."])
     print(f"Commit messages: {commit_messages}")
     return keyword in commit_messages
 
@@ -34,12 +34,11 @@ def get_arguments():
         default="CHANGELOG.md"
     )
     parser.add_argument(
-        "--branch-to-compare",
-        default="main"
-    )
-    parser.add_argument(
         "--skip-keyword",
         default="[changelog-check skip]"
+    )
+    parser.add_argument(
+        "remote_url"
     )
 
     return parser.parse_args()
@@ -47,15 +46,17 @@ def get_arguments():
 
 def main():
     args = get_arguments()
-    git_log_output = run_command(["git", "log", "--pretty=format:%H", f"{args.branch_to_compare}.."])
+    upstream_hash = run_command(["git", "ls-remote", args.remote_url, "HEAD"]).split()[0]
+
+    git_log_output = run_command(["git", "log", "--pretty=format:%H", f"{upstream_hash}.."])
     print(f"Git log output: {git_log_output})")
 
-    if skip_check(args.skip_keyword, args.branch_to_compare):
+    if skip_check(args.skip_keyword, upstream_hash):
         print("Changelog check is being skipped.")
         return 0
 
     changed_files_output = run_command(
-        ["git", "diff", "--name-only", f"{args.branch_to_compare}..."],
+        ["git", "diff", "--name-only", f"{upstream_hash}..."],
     )
     print(f"Changed files output: {changed_files_output}")
 
